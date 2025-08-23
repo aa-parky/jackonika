@@ -1,0 +1,16 @@
+{
+  "name": "jackonika",
+  "version": "0.1.0",
+  "description": "MIDI In stompbox adapter for the Tonika rack.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/jackonika.js --bundle --format=iife --global-name=Jackonika --outfile=dist/jackonika.iife.js --minify",
+    "postbuild": "node scripts/copy-css.js",
+    "dev": "http-server -p 8080 ."
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5",
+    "http-server": "^14.1.1"
+  }
+}
