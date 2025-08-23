@@ -9,8 +9,9 @@
     "postbuild": "node scripts/copy-css.js",
     "build:backplanika": "echo 'Backplanika is plain JS (rack/backplanika.js + rack/backplanika.iife.js) — no build needed.'",
     "build:all": "npm run build && npm run build:backplanika",
-    "dev": "http-server -p 8080 .",
-    "demo": "http-server -p 8080 demo"
+    "dev": "http-server -p 9125 .",
+    "demo": "http-server -p 9126 demo",
+    "dev:random": "http-server -p 0 ."
   },
   "devDependencies": {
     "esbuild": "^0.21.5",
