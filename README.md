@@ -3,6 +3,8 @@
 MIDI‑In stompbox adapter for the Tonika rack.
 Pick a MIDI input device (Web MIDI), blink an LED on activity, and emit normalized goblin‑events (noteon, noteoff, cc) that you can route to any module (e.g., Clavonika to highlight keys).
 
+![alt text](images/jackonika.png "Midonika image")
+
 ## Features
 
 - Web MIDI input (device picker, channel filter: Omni/1–16)
