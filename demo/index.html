@@ -1,68 +1,185 @@
 <!doctype html>
+<!-- 
+	 ,      ,
+	/(.-""-.)\
+	|\  \/  /|
+	| \    / |
+	\  '--'  /
+	 `'----'`
+
+ 🧌 Goblin Stanza:
+  Lost are ye, wandering /demo/ alone,
+  Seek /demo/patch.html — the true mushroom throne.
+  Jackonika hums, Backplanika sings,
+  Only the clever find where it rings.
+
+-->
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Jackonika + Clavonika Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Jackonika CSS -->
-  <link rel="stylesheet" href="../dist/jackonika_style.css" />
-  <!-- Optional local styles -->
-  <style>
-	body { margin: 0; padding: 24px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-	.wrap { max-width: 1100px; margin: 0 auto; }
-	.row { display:flex; gap:24px; align-items:flex-start; flex-wrap: wrap; }
-	.panel { flex:1 1 420px; }
-	.log { font-family: ui-monospace, Menlo, monospace; background:#f7f7f7; padding:12px; border-radius:8px; min-height:80px; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-	<h1>Jackonika 🎛️ → Clavonika 🎹</h1>
-	<p>Pick a MIDI input in Jackonika, then play: Clavonika lights the keys.</p>
+  <head>
+    <meta charset="utf-8" />
+    <title>Jackonika + Clavonika Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Jackonika CSS -->
+    <link rel="stylesheet" href="../dist/jackonika_style.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .row {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .panel {
+        flex: 1 1 420px;
+      }
+      .card {
+        background: #fafafa;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        padding: 16px;
+      }
+      .log {
+        font-family: ui-monospace, Menlo, monospace;
+        background: #fff;
+        padding: 12px;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        min-height: 120px;
+        max-height: 360px;
+        overflow: auto;
+        white-space: pre-wrap;
+        line-height: 1.25;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Jackonika 🎛️ → Clavonika 🎹</h1>
+      <p>
+        Pick a MIDI input in Jackonika, then play: Clavonika lights the keys (if
+        present).
+      </p>
 
-	<div class="row">
-	  <div class="panel">
-		<div id="jacko"></div>
-	  </div>
-	  <div class="panel">
-		<!-- Optional: include Clavonika if available locally -->
-		<link rel="stylesheet" href="../../clavonika/dist/clavonika_style.css" />
-		<div id="kb" style="border-radius:12px; overflow:hidden; box-shadow:0 10px 24px rgba(0,0,0,.08);"></div>
-	  </div>
-	</div>
+      <div class="row">
+        <div class="panel card">
+          <div id="jacko"></div>
+        </div>
 
-	<h3>Events</h3>
-	<div id="log" class="log"></div>
-  </div>
+        <div class="panel card">
+          <h3 style="margin-top: 0">Keyboard</h3>
+          <div
+            id="kb"
+            style="
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+              min-height: 120px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #777;
+            "
+          >
+            <em>Waiting for Clavonika… (optional)</em>
+          </div>
+        </div>
+      </div>
 
-  <!-- Scripts -->
-  <script src="../dist/jackonika.iife.js"></script>
-  <!-- Load Clavonika (adjust path if repos differ). If missing, demo still shows Jackonika events. -->
-  <script src="../../clavonika/dist/clavonika.iife.js"></script>
+      <div class="card" style="margin-top: 24px">
+        <h3 style="margin-top: 0">Events</h3>
+        <div id="log" class="log"></div>
+      </div>
+    </div>
 
-  <script>
-	const logEl = document.getElementById('log');
-	function log(line) {
-	  const at = new Date().toLocaleTimeString();
-	  logEl.textContent = `[${at}] ${line}\n` + logEl.textContent;
-	}
+    <!-- Jackonika -->
+    <script src="../dist/jackonika.iife.js"></script>
 
-	// Create Jackonika
-	const jack = Jackonika.create('#jacko', { channel: 'omni' });
+    <script>
+      const logEl = document.getElementById("log");
+      const kbEl = document.getElementById("kb");
 
-	// Option A: if Clavonika exists, mount and patch
-	let kb = null;
-	if (window.Clavonika) {
-	  kb = Clavonika.create('#kb', { start:'C2', end:'C7', labels:true });
-	  jack.output.on(e => {
-		if (e.type === 'noteon') { kb.highlight(e.note); log(`MIDI noteOn ${e.note} ch${e.ch} vel:${(e.vel||0).toFixed(2)}`); }
-		if (e.type === 'noteoff') { kb.unhighlight(e.note); log(`MIDI noteOff ${e.note} ch${e.ch}`); }
-		if (e.type === 'cc') { log(`MIDI CC ${e.cc}=${e.value} ch${e.ch}`); }
-	  });
-	} else {
-	  // Option B: just log
-	  jack.output.on(e => log(JSON.stringify(e)));
-	}
-  </script>
-</body>
+      function append(line) {
+        const at = new Date().toLocaleTimeString();
+        logEl.textContent += `[${at}] ${line}\n`;
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      // Create Jackonika immediately
+      const jack = Jackonika.create("#jacko", { channel: "omni" });
+
+      // Default: log everything
+      jack.output.on((e) =>
+        append(typeof e === "string" ? e : JSON.stringify(e)),
+      );
+
+      // Try to load Clavonika only if it actually exists (avoid noisy 404s).
+      (async function tryLoadClavonika() {
+        try {
+          const base = "../../clavonika/dist/";
+          const jsPath = base + "clavonika.iife.js";
+          const cssPath = base + "clavonika_style.css";
+
+          // HEAD check for JS file
+          const res = await fetch(jsPath, { method: "HEAD" });
+          if (!res.ok) return; // not present; silently keep log-only demo
+
+          // inject CSS
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = cssPath;
+          document.head.appendChild(link);
+
+          // inject JS, then init
+          await new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src = jsPath;
+            s.onload = resolve;
+            s.onerror = reject;
+            document.body.appendChild(s);
+          });
+
+          if (window.Clavonika) {
+            kbEl.innerHTML = "";
+            const kb = Clavonika.create("#kb", {
+              start: "C2",
+              end: "C7",
+              labels: true,
+            });
+
+            // Re-route to light keys (and still log concise messages)
+            jack.output.on((e) => {
+              if (e.type === "noteon") {
+                kb.highlight(e.note);
+                append(
+                  `noteOn ${e.note} ch${e.ch} vel:${(e.vel || 0).toFixed(2)}`,
+                );
+              } else if (e.type === "noteoff") {
+                kb.unhighlight(e.note);
+                append(`noteOff ${e.note} ch${e.ch}`);
+              } else if (e.type === "cc") {
+                append(`cc ${e.cc}=${e.value} ch${e.ch}`);
+              }
+            });
+          }
+        } catch (_) {
+          // If anything fails, we just stay in log-only mode.
+        }
+      })();
+    </script>
+  </body>
 </html>

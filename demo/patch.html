@@ -1,28 +1,73 @@
 <!doctype html>
 <meta charset="utf-8" />
-<title>Jackonika ↔ Backplanika demo</title>
+<title>Jackonika ↔ Backplanika Demo</title>
 <link rel="stylesheet" href="../dist/jackonika_style.css" />
-<div id="jack"></div>
-<pre id="log" style="padding:12px;border:1px solid #ccc;max-height:240px;overflow:auto"></pre>
 
+<style>
+  /* Lightweight “card” to visually match the Jackonika UI */
+  .wrap { max-width: 720px; margin: 2rem auto; }
+  .card {
+	background: #fafafa;
+	border: 1px solid #ddd;
+	border-radius: 12px;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+	padding: 16px;
+  }
+  .heading { margin: 0 0 .25rem 0; font-weight: 600; }
+  .subtle { margin: 0 0 1rem 0; color: #555; font-size: 0.95rem; }
+
+  /* Events panel */
+  .events { margin-top: 16px; }
+  .events .log {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-radius: 8px;
+	padding: 8px;
+	max-height: 340px;      /* fixed visible height */
+	overflow: auto;         /* scrollable */
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 13px;
+	line-height: 1.25;
+	white-space: pre-wrap;  /* wrap long JSON lines nicely */
+  }
+</style>
+
+<div class="wrap">
+  <h1>Jackonika 🎛️ → Backplanika 🔌</h1>
+  <p class="subtle">Pick a MIDI input in Jackonika, then play. Events appear below.</p>
+
+  <!-- Jackonika UI mounts here; its own CSS handles this card -->
+  <div id="jack"></div>
+
+  <!-- Events “card” -->
+  <div class="card events">
+	<h2 class="heading">Events</h2>
+	<pre id="log" class="log"></pre>
+  </div>
+</div>
+
+<!-- Only Jackonika + Backplanika; no Clavonika assets, so no 404s -->
 <script src="../dist/jackonika.iife.js"></script>
 <script src="../rack/backplanika.iife.js"></script>
 <script>
   const jack = Jackonika.create("#jack", { channel: "omni" });
 
-  // Simple log sink with the required 'emit(e)' shape:
   const logEl = document.querySelector("#log");
-  const logSink = { emit(e) {
-	logEl.textContent = JSON.stringify(e) + "\n" + logEl.textContent;
-  }};
+  function appendLine(text) {
+	// Append at bottom and auto-scroll to newest event.
+	logEl.textContent += text + "\n";
+	logEl.scrollTop = logEl.scrollHeight;
+  }
 
-  // One‑liner patch:
-  const unplug = Backplanika.connect(jack.output, logSink);
+  const logSink = {
+	emit(e) {
+	  // Short, tidy line with a timestamp bracket.
+	  const hh = String(new Date().getHours()).padStart(2, "0");
+	  const mm = String(new Date().getMinutes()).padStart(2, "0");
+	  const ss = String(new Date().getSeconds()).padStart(2, "0");
+	  appendLine(`[${hh}:${mm}:${ss}] ${JSON.stringify(e)}`);
+	}
+  };
 
-  // Example: filter/map inline
-  // const unplug = Backplanika.connect(jack.output, logSink, {
-  //   filter: (e) => e.type === "noteon",
-  //   map:    (e) => ({ ...e, ts: Date.now() }),
-  //   thru:   (e) => console.debug("thru:", e),
-  // });
+  Backplanika.connect(jack.output, logSink);
 </script>
