@@ -4,5 +4,7 @@ dist/
 demo-dist/
 .vite/
 
+# Webstorm
+.idea
 # OS
 .DS_Store
