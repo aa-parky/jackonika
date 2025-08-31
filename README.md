@@ -79,4 +79,4 @@ Initialize Jackonika and populate the device selector.
 - Context: Must be served from https:// or http://localhost/ (Web MIDI requires a secure context).
 - Device: Any MIDI keyboard, controller, or virtual loopback port (e.g., macOS IAC Driver, loopMIDI on Windows).
 
-### License  MIT © 2025 AAParky  
+### License MIT © 2025 AAParky  
