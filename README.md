@@ -27,10 +27,21 @@ Copy jackonika.js into your project and include it:
 Minimal example
 
 ```  
-<!DOCTYPE html>  
-<html>  
-  <body>    <label for="midiDeviceSelector">MIDI Input:</label>    <select id="midiDeviceSelector"></select>  
-    <script src="js/jackonika.js"></script>    <script>      Jackonika.init({        onNoteOn:  (note, vel) => console.log("NOTE ON ", note, "vel=", vel),        onNoteOff: (note)      => console.log("NOTE OFF", note)      });    </script>  </body></html>  
+<!DOCTYPE html>
+<html>
+  <body>
+    <label for="midiDeviceSelector">MIDI Input:</label>
+    <select id="midiDeviceSelector"></select>
+
+    <script src="js/jackonika.js"></script>
+    <script>
+      Jackonika.init({
+        onNoteOn:  (note, vel) => console.log("NOTE ON ", note, "vel=", vel),
+        onNoteOff: (note)      => console.log("NOTE OFF", note)
+      });
+    </script>
+  </body>
+</html>
 ```  
 
 
